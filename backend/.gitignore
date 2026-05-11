@@ -1,0 +1,35 @@
+# See https://help.github.com/articles/ignoring-files for more about ignoring files.
+
+# ----------Bundler----------
+/.bundle
+
+# ----------Logs e arquivos temporários----------
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# ----------Banco SQLite e Active Storage----------
+/db/*.sqlite3
+/db/*.sqlite3-*
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+# ----------Builds e cobertura----------
+/public/assets
+/coverage/
+
+# ----------Credenciais Rails (NUNCA versionar)----------
+/config/master.key
+/config/credentials/*.key
+
+# ----------Variáveis de ambiente----------
+.env
+.env.*
+
+# ----------Histórico de debug----------
+.byebug_history
+.rspec_status
