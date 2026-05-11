@@ -1,0 +1,43 @@
+# ----------OS----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----------Editores / IDEs----------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ----------Variáveis de ambiente----------
+.env
+.env.local
+.env.*.local
+
+# ----------Rails (backend/)----------
+backend/.bundle/
+backend/log/*
+backend/tmp/*
+backend/storage/*
+backend/db/*.sqlite3
+backend/db/*.sqlite3-journal
+backend/db/*.sqlite3-*
+backend/public/assets/
+backend/public/packs/
+backend/coverage/
+backend/.byebug_history
+backend/.rspec_status
+!backend/log/.keep
+!backend/tmp/.keep
+!backend/storage/.keep
+
+# ----------Node / Vite (frontend/)----------
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/coverage/
+frontend/*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
