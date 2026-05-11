@@ -16,11 +16,11 @@ class AuthController < ApplicationController
   # POST /login
   def login
     # Limpa e padroniza o e-mail antes da busca (Boas práticas de dados)
-    user = User.find_by(email: params[:email].to_s.downcase.strip)
+    user = User.find_by(email: login_params[:email].to_s.downcase.strip)
 
     # O operador &. (Safe Navigation) evita erro se o user for nulo
     # authenticate é um método do Rails (da gem bcrypt, descomentado) que checa a senha
-    if user&.authenticate(params[:password])
+    if user&.authenticate(login_params[:password])
       render json: { user: user_payload(user), token: issue_token(user) }, status: :ok
     else
       render json: { error: "E-mail ou senha inválidos" }, status: :unauthorized
@@ -33,6 +33,10 @@ class AuthController < ApplicationController
   # Impede que alguém envie admin: true.
   def signup_params
     params.require(:user).permit(:name, :email, :password)
+  end
+
+  def login_params
+    params.require(:user).permit(:email, :password)
   end
 
   # Gera o JWT
