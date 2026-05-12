@@ -18,6 +18,9 @@ export default function CourseDetail() {
   // Um único estado controla abertura e modo do LessonForm.
   const [lessonEditing, setLessonEditing] = useState<Lesson | 'new' | null>(null)
 
+  //----------Filtro de status----------
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all')
+
   //----------Exclusão de aula----------
   // Após confirmar, remove a aula e recarrega o curso para atualizar a lista.
   async function handleDeleteLesson(lessonId: number) {
@@ -84,9 +87,8 @@ export default function CourseDetail() {
 
         {/* Seção de aulas */}
         <div>
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-3">
             <h2 className="text-base font-semibold text-slate-700">Aulas</h2>
-            {/* Botão oculto enquanto o formulário está aberto para evitar múltiplos forms */}
             {isCreator && lessonEditing === null && (
               <button
                 onClick={() => setLessonEditing('new')}
@@ -97,9 +99,27 @@ export default function CourseDetail() {
             )}
           </div>
 
-          {/* Formulário montado somente quando há edição/criação ativa */}
+          {/* Filtro por status: filtragem local sobre o array já carregado */}
+          <div className="flex gap-2 mb-4">
+            {(['all', 'draft', 'published'] as const).map(opt => (
+              <button
+                key={opt}
+                onClick={() => setStatusFilter(opt)}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  statusFilter === opt
+                    ? 'bg-slate-800 text-white border-slate-800'
+                    : 'text-slate-500 border-slate-300 hover:border-slate-400'
+                }`}
+              >
+                {{ all: 'Todos', draft: 'Rascunho', published: 'Publicada' }[opt]}
+              </button>
+            ))}
+          </div>
+
           {lessonEditing !== null && (
+            // key força remontagem quando muda de aula, reinicializando os estados do form
             <LessonForm
+              key={lessonEditing === 'new' ? 'new' : lessonEditing.id}
               courseId={Number(id)}
               lesson={lessonEditing === 'new' ? undefined : lessonEditing}
               onSave={() => { setLessonEditing(null); loadCourse() }}
@@ -107,21 +127,22 @@ export default function CourseDetail() {
             />
           )}
 
-          {/* Mensagem vazia exibida apenas quando o formulário também está fechado */}
           {course.lessons.length === 0 && lessonEditing === null && (
             <p className="text-sm text-slate-400">Nenhuma aula cadastrada.</p>
           )}
 
           <div className="flex flex-col gap-2">
-            {course.lessons.map(lesson => (
-              <LessonItem
-                key={lesson.id}
-                lesson={lesson}
-                isCreator={isCreator}
-                onEdit={setLessonEditing}
-                onDelete={handleDeleteLesson}
-              />
-            ))}
+            {course.lessons
+              .filter(l => statusFilter === 'all' || l.status === statusFilter)
+              .map(lesson => (
+                <LessonItem
+                  key={lesson.id}
+                  lesson={lesson}
+                  isCreator={isCreator}
+                  onEdit={setLessonEditing}
+                  onDelete={handleDeleteLesson}
+                />
+              ))}
           </div>
         </div>
       </main>
