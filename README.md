@@ -16,6 +16,7 @@ Sistema Full Stack de gestão de cursos online.
 | Integração | RandomUser API (Instrutor Convidado)        |
 
 O projeto foi desenvolvido com o auxilio do assistente de IA Gemini 3 (Raciocício e 3.1 Pro)
+
 ---
 
 ## Estrutura do Projeto
