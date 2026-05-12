@@ -6,6 +6,7 @@ import { useCourseDetail } from '../hooks/useCourseDetail'
 import { lessonService } from '../services/lessonService'
 import LessonForm from '../components/LessonForm'
 import LessonItem from '../components/LessonItem'
+import GuestInstructor from '../components/GuestInstructor'
 import type { Lesson } from '../types'
 
 export default function CourseDetail() {
@@ -85,6 +86,10 @@ export default function CourseDetail() {
           </p>
         </div>
 
+        <div className="mb-8">
+          <GuestInstructor />
+        </div>
+
         {/* Seção de aulas */}
         <div>
           <div className="flex justify-between items-center mb-3">
@@ -117,9 +122,7 @@ export default function CourseDetail() {
           </div>
 
           {lessonEditing !== null && (
-            // key força remontagem quando muda de aula, reinicializando os estados do form
             <LessonForm
-              key={lessonEditing === 'new' ? 'new' : lessonEditing.id}
               courseId={Number(id)}
               lesson={lessonEditing === 'new' ? undefined : lessonEditing}
               onSave={() => { setLessonEditing(null); loadCourse() }}
