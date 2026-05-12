@@ -14,10 +14,9 @@ export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [search, setSearch] = useState('')
 
   //----------Carregamento----------
-  // Lista todos os cursos ao montar o componente.
-  // finally garante que loading seja desativado tanto em sucesso quanto em erro.
   useEffect(() => {
     courseService.list()
       .then(setCourses)
@@ -25,10 +24,15 @@ export default function Dashboard() {
       .finally(() => setLoading(false))
   }, [])
 
+  //----------Filtro----------
+  // Filtragem local: não faz nova requisição, apenas deriva do array já carregado.
+  const filtered = courses.filter(c =>
+    c.name.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* Header: nome do app, usuário logado e botão de logout */}
       <header className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center">
         <h1 className="text-lg font-semibold text-slate-800">CourseSphere</h1>
         <div className="flex items-center gap-4">
@@ -40,7 +44,7 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-slate-800">Cursos</h2>
           <button
             onClick={() => navigate('/courses/new')}
@@ -50,23 +54,31 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Estados de feedback: loading, erro e lista vazia são mutuamente exclusivos */}
+        <input
+          type="text"
+          placeholder="Buscar por nome..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-6"
+        />
+
         {loading && <p className="text-sm text-slate-400">Carregando...</p>}
         {error && <p className="text-sm text-red-500">{error}</p>}
         {!loading && !error && courses.length === 0 && (
           <p className="text-sm text-slate-400">Nenhum curso cadastrado ainda.</p>
         )}
+        {!loading && !error && courses.length > 0 && filtered.length === 0 && (
+          <p className="text-sm text-slate-400">Nenhum curso encontrado para "{search}".</p>
+        )}
 
-        {/* Cada card é um button para aproveitar acessibilidade e foco de teclado nativos */}
         <div className="flex flex-col gap-3">
-          {courses.map(course => (
+          {filtered.map(course => (
             <button
               key={course.id}
               onClick={() => navigate(`/courses/${course.id}`)}
               className="bg-white border border-slate-200 rounded-lg p-4 text-left hover:border-slate-300 transition-colors"
             >
               <p className="font-medium text-slate-800">{course.name}</p>
-              {/* line-clamp-2 evita que descrições longas quebrem o layout da lista */}
               {course.description && (
                 <p className="text-sm text-slate-500 mt-1 line-clamp-2">{course.description}</p>
               )}

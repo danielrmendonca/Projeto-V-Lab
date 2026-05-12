@@ -6,6 +6,7 @@ import { useCourseDetail } from '../hooks/useCourseDetail'
 import { lessonService } from '../services/lessonService'
 import LessonForm from '../components/LessonForm'
 import LessonItem from '../components/LessonItem'
+import GuestInstructor from '../components/GuestInstructor'
 import type { Lesson } from '../types'
 
 export default function CourseDetail() {
@@ -17,6 +18,9 @@ export default function CourseDetail() {
   // null = fechado, new = criando, Lesson = editando aula existente.
   // Um único estado controla abertura e modo do LessonForm.
   const [lessonEditing, setLessonEditing] = useState<Lesson | 'new' | null>(null)
+
+  //----------Filtro de status----------
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all')
 
   //----------Exclusão de aula----------
   // Após confirmar, remove a aula e recarrega o curso para atualizar a lista.
@@ -82,11 +86,14 @@ export default function CourseDetail() {
           </p>
         </div>
 
+        <div className="mb-8">
+          <GuestInstructor />
+        </div>
+
         {/* Seção de aulas */}
         <div>
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-3">
             <h2 className="text-base font-semibold text-slate-700">Aulas</h2>
-            {/* Botão oculto enquanto o formulário está aberto para evitar múltiplos forms */}
             {isCreator && lessonEditing === null && (
               <button
                 onClick={() => setLessonEditing('new')}
@@ -97,7 +104,23 @@ export default function CourseDetail() {
             )}
           </div>
 
-          {/* Formulário montado somente quando há edição/criação ativa */}
+          {/* Filtro por status: filtragem local sobre o array já carregado */}
+          <div className="flex gap-2 mb-4">
+            {(['all', 'draft', 'published'] as const).map(opt => (
+              <button
+                key={opt}
+                onClick={() => setStatusFilter(opt)}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  statusFilter === opt
+                    ? 'bg-slate-800 text-white border-slate-800'
+                    : 'text-slate-500 border-slate-300 hover:border-slate-400'
+                }`}
+              >
+                {{ all: 'Todos', draft: 'Rascunho', published: 'Publicada' }[opt]}
+              </button>
+            ))}
+          </div>
+
           {lessonEditing !== null && (
             <LessonForm
               courseId={Number(id)}
@@ -107,21 +130,22 @@ export default function CourseDetail() {
             />
           )}
 
-          {/* Mensagem vazia exibida apenas quando o formulário também está fechado */}
           {course.lessons.length === 0 && lessonEditing === null && (
             <p className="text-sm text-slate-400">Nenhuma aula cadastrada.</p>
           )}
 
           <div className="flex flex-col gap-2">
-            {course.lessons.map(lesson => (
-              <LessonItem
-                key={lesson.id}
-                lesson={lesson}
-                isCreator={isCreator}
-                onEdit={setLessonEditing}
-                onDelete={handleDeleteLesson}
-              />
-            ))}
+            {course.lessons
+              .filter(l => statusFilter === 'all' || l.status === statusFilter)
+              .map(lesson => (
+                <LessonItem
+                  key={lesson.id}
+                  lesson={lesson}
+                  isCreator={isCreator}
+                  onEdit={setLessonEditing}
+                  onDelete={handleDeleteLesson}
+                />
+              ))}
           </div>
         </div>
       </main>
